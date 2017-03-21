@@ -10,23 +10,15 @@ public class AskActor extends AbstractActor {
 
     public AskActor(){
 
-        Props selProp = Props.create(SelectionActor.class);
-        ActorRef selActor = getContext().actorOf(selProp,"sel");
-
-        ActorSelection actorSel = getContext().actorSelection("/user/ask/sel");
-
-        actorSel.tell(new Identify("selection"),self());
+        System.out.println("--from ask--");
 
         receive(ReceiveBuilder
-                        .match(String.class,msg -> {
-
-//                    Thread.currentThread().sleep(5000);
-                            System.out.println(" message is : "+msg);
-                        }).build()
+                .match(String.class,msg -> {
+                    System.out.println(" message is : "+msg);
+                }).build()
         );
 
-        getContext().system().shutdown();
-
+//        getContext().system().shutdown();
     }
 
 }

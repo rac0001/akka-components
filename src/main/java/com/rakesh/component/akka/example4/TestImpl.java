@@ -15,13 +15,8 @@ public class TestImpl {
 
         ActorSystem fileSystem = ActorSystem.create("basics");
 
-        Props askProp = Props.create(AskActor.class);
-        ActorRef askActor = fileSystem.actorOf(askProp,"ask");
-
-        askActor.tell("Hello",ActorRef.noSender());
-
-//        ActorSelection act= fileSystem.actorSelection("/basics/user/ask");
-//        act.tell(new Identify("hello from selection"),askActor);
+        ActorRef askActor = fileSystem.actorOf(Props.create(AskActor.class),"ask");
+        ActorRef selActor = fileSystem.actorOf(Props.create(SelectionActor.class),"sel");
 
 
 /*        final Inbox inbox = Inbox.create(fileSystem);

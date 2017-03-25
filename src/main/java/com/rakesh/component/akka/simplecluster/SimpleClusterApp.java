@@ -12,7 +12,7 @@ public class SimpleClusterApp {
 
     public static void main(String[] args) {
         if (args.length == 0)
-            startup(new String[] { "13782", "1557", "0" });
+            startup(new String[] { "2557", "2558", "0" });
         else
             startup(args);
     }

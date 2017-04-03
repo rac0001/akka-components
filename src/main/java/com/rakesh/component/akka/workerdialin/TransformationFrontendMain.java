@@ -41,7 +41,7 @@ public class TransformationFrontendMain {
                         new TransformationMessages.TransformationJob("hello-" + counter.incrementAndGet()),
                         timeout).onSuccess(new OnSuccess<Object>() {
                     public void onSuccess(Object result) {
-                        System.out.println("###########"+result);
+                        System.out.println(result);
                     }
                 }, ec);
             }

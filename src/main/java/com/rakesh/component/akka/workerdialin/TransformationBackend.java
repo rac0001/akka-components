@@ -31,9 +31,10 @@ public class TransformationBackend extends AbstractActor  {
                 .match(TransformationMessages.TransformationJob.class,job ->{
                     String jobString = job.getTransformString();
                     String finalString = backendRule(jobString);
+                    System.out.println("*****"+finalString);
                     TransformationMessages.TransformationResult transformationResult =
                             new TransformationMessages.TransformationResult(finalString);
-                    sender().tell(transformationResult.getTransformResultString(),self());
+                    sender().tell(transformationResult,self());
                 })
                 .match(ClusterEvent.CurrentClusterState.class, state -> {
                     for(Member member : state.getMembers()){

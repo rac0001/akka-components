@@ -19,15 +19,16 @@ public class TransformationFrontend extends AbstractActor {
     public TransformationFrontend(){
 
         receive(ReceiveBuilder
-                .match(TransformationMessages.TransformationJob.class, job -> backendList.isEmpty() , job ->{
-                    sender().tell(new TransformationMessages.FailedJob("no backend nodes available",job).getResult(),self());
+                .match(TransformationMessages.TransformationJob.class, job -> backendList.isEmpty() , job -> {
+                    sender().tell(new TransformationMessages.FailedJob("no backend nodes available",job),self());
                 })
                 /*.match(TransformationMessages.TransformationResult.class, result -> {
                     System.out.println("############3"+result.getTransformResultString());
                 })*/
                 .match(TransformationMessages.TransformationJob.class, job ->{
                     jobCounter++;
-                    backendList.get( jobCounter % backendList.size()).forward(job,getContext());
+                    backendList.stream().filter(ref -> ref != null).forEach(ref -> ref.forward(job,getContext()));
+//                    backendList.get( jobCounter % backendList.size()).forward(job,getContext());
                 })
                 .matchEquals("BackendWorkers", message -> {
                     getContext().watch(sender());

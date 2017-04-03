@@ -20,7 +20,7 @@ public interface TransformationMessages {
         }
     }
 
-    class TransformationResult{
+    class TransformationResult {
 
         public String transformResultString;
 
@@ -30,6 +30,11 @@ public interface TransformationMessages {
 
         public String getTransformResultString() {
             return transformResultString;
+        }
+
+        @Override
+        public String toString() {
+            return "TransformationResult(" + transformResultString + ")";
         }
 
     }
@@ -50,6 +55,10 @@ public interface TransformationMessages {
 
         public String getResult() {
             return result;
+        }
+        @Override
+        public String toString() {
+            return "JobFailed(" + result + ")";
         }
 
     }

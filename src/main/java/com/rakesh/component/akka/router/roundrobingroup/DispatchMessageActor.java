@@ -22,9 +22,24 @@ public class DispatchMessageActor extends AbstractActor {
 
         List<String> routees = new ArrayList<>();
 
-        routees.add("/user/worker-1");
-        routees.add("/user/worker-2");
-        routees.add("/user/worker-3");
+
+        ActorRef configRef = getContext().actorOf(FromConfig.getInstance().props(Props.create(Worker.class)),"remote-round-robin");
+
+
+        receive(ReceiveBuilder.match(
+                String.class,msg -> {
+//                    router.route(msg,self());
+//                    routerRef.tell(msg,self());
+                    configRef.tell(msg,self());
+                }
+                ).match(PoisonPill.class,msg->{
+                    getContext().stop(self());
+                }).build()
+        );
+
+/*        routees.add("akka.tcp://remote-system@127.0.0.1:1550");
+        routees.add("akka.tcp://remote-system-1@127.0.0.1:1559");
+//        routees.add("/user/worker-3");
 
         ActorRef router = getContext().actorOf(new RoundRobinGroup(routees).props(),"group");
 
@@ -35,7 +50,7 @@ public class DispatchMessageActor extends AbstractActor {
                 ).match(PoisonPill.class,msg->{
                     getContext().stop(self());
                 }).build()
-        );
+        );*/
 
     }
 

@@ -25,7 +25,7 @@ public class TransformationFrontendMain {
         final String port = args.length > 0 ? args[0] : "0";
         final Config config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port).
                 withFallback(ConfigFactory.parseString("akka.cluster.roles = [frontend]")).
-                withFallback(ConfigFactory.load());
+                withFallback(ConfigFactory.load().getConfig("AkkaCluster"));
 
         ActorSystem system = ActorSystem.create("ClusterSystem",config);
 

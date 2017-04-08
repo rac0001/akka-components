@@ -12,10 +12,10 @@ public class TransformationBackendMain {
 
     public static void main(String args[]){
 
-        final String port = args.length > 0 ? args[0] : "0";
+        final String port = args.length > 0 ? args[0] : "7199";
         final Config config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port).
                 withFallback(ConfigFactory.parseString("akka.cluster.roles = [backend]")).
-                withFallback(ConfigFactory.load());
+                withFallback(ConfigFactory.load().getConfig("AkkaCluster"));
 
         ActorSystem system = ActorSystem.create("ClusterSystem",config);
 

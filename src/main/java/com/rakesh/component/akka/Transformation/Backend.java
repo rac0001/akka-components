@@ -12,11 +12,11 @@ import akka.japi.pf.ReceiveBuilder;
  */
 public class Backend extends AbstractActor {
 
-    private Cluster cluster;
+    private Cluster cluster = Cluster.get(getContext().system());
 
     @Override
     public void preStart(){
-        cluster = Cluster.get(getContext().system());
+        cluster.subscribe(self(),ClusterEvent.MemberUp.class);
     }
 
     @Override

@@ -16,14 +16,8 @@ import java.util.Random;
  */
 public class FrontEnd extends AbstractActor {
 
-    private Cluster cluster;
-    private List<ActorRef> backendList;
-
-    @Override
-    public void preStart(){
-        backendList = new ArrayList<>();
-        cluster = Cluster.get(getContext().system());
-    }
+    private Cluster cluster =  Cluster.get(getContext().system());
+    private List<ActorRef> backendList = new ArrayList<>();
 
     @Override
     public void postStop(){

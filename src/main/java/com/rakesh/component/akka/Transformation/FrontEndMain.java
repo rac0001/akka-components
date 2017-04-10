@@ -22,8 +22,7 @@ public class FrontEndMain {
 
         final ActorRef actorRef = actorSystem.actorOf(Props.create(FrontEnd.class),"frontend");
 
-
-        actorSystem.scheduler().scheduleOnce(Duration.create(25, TimeUnit.SECONDS),
+        actorSystem.scheduler().scheduleOnce(Duration.create(30, TimeUnit.SECONDS),
                 new Runnable() {
                     @Override
                     public void run() {
@@ -31,8 +30,6 @@ public class FrontEndMain {
                         actorRef.tell(new AddMessage("hello from frontend"), ActorRef.noSender());
                     }
                 }, actorSystem.dispatcher());
-
-//        actorRef.tell(new AddMessage("hello from frontend"), ActorRef.noSender());
 
     }
 

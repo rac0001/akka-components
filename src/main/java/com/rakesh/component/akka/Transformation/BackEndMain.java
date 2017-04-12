@@ -14,8 +14,10 @@ public class BackEndMain {
     public static void main(String args[]){
 
         String port = args.length == 0 ? "0" : args[0];
+        String host = args.length == 0 ? "10.248.66.129" : args[1];
 
         Config config= ConfigFactory.parseString("akka.remote.netty.tcp.port="+port)
+                .withFallback(ConfigFactory.parseString("akka.remote.netty.tcp.hostname="+host))
                 .withFallback(ConfigFactory.load().getConfig("BackEndCluster"));
 
         ActorSystem actorSystem = ActorSystem.create("transform-system",config);

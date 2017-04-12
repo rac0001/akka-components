@@ -1,9 +1,11 @@
 package com.rakesh.component.akka.Transformation;
 
+import java.io.Serializable;
+
 /**
  * Created by ranantoju on 4/8/2017.
  */
-public class AddMessage {
+public class AddMessage implements Serializable{
 
     private String msg;
 

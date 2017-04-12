@@ -16,14 +16,9 @@ import java.util.Random;
  */
 public class FrontEnd extends AbstractActor {
 
-    private Cluster cluster;
-    private List<ActorRef> backendList;
-
-    @Override
-    public void preStart(){
-        backendList = new ArrayList<>();
-        cluster = Cluster.get(getContext().system());
-    }
+    private Cluster cluster = Cluster.get(getContext().system());
+    private List<ActorRef> backendList = new ArrayList<>();
+    int jobCounter = 0;
 
     @Override
     public void postStop(){
@@ -35,13 +30,17 @@ public class FrontEnd extends AbstractActor {
                 .match(AddMessage.class ,msg -> backendList.isEmpty() ,msg -> {
                     System.out.println("backend list is empty");})
                 .match(AddMessage.class , msg -> {
-                    int val = new Random().nextInt(backendList.size());
-                    backendList.get(val).tell(msg.getMsg(),self());
+
+                    jobCounter++;
+                    backendList.get( jobCounter % backendList.size()).tell(msg.getMsg(),self());
+
+//                    int val = new Random().nextInt(backendList.size());
+//                    backendList.get(val).tell(msg.getMsg(),self());
+
                 }).match(String.class ,msg -> msg.equalsIgnoreCase("backendWorker") &&
                         !backendList.contains(sender()), msg -> {
                     System.out.println("adding backend :"+sender().path());
-                    ActorRef actorRef = sender();
-                    backendList.add(actorRef);
+                    backendList.add(sender());
                     getContext().watch(sender());
                 }).match(ResultMessage.class , msg -> {
                     System.out.println("transformed backend String:"+msg.getMsg());

@@ -12,11 +12,12 @@ import akka.japi.pf.ReceiveBuilder;
  */
 public class Backend extends AbstractActor {
 
-    private Cluster cluster;
+    private Cluster cluster = Cluster.get(getContext().system());
 
     @Override
     public void preStart(){
-        cluster = Cluster.get(getContext().system());
+        cluster.subscribe(self(), ClusterEvent.initialStateAsEvents(),
+                ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
 
     @Override
@@ -27,15 +28,19 @@ public class Backend extends AbstractActor {
     public Backend() {
         receive(ReceiveBuilder
                 .match(String.class , msg -> {
+                    System.out.println("---------->"+self()+"--->"+msg);
                     sender().tell( new ResultMessage(msg.toUpperCase()),self());})
                 .match(ClusterEvent.CurrentClusterState.class, state -> {
                     for(Member member : state.getMembers()){
+                        System.out.println("########up member"+member.getRoles());
+
                         if (member.status().equals(MemberStatus.up())) {
                             register(member);
                         }
                     }
                 })
                 .match(ClusterEvent.MemberUp.class, mUp -> {
+                    System.out.println("########up member"+mUp.member().getRoles());
                     register(mUp.member());
                 })
                 .build()

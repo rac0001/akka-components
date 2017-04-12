@@ -26,6 +26,9 @@ public class FrontEndMain {
 
 /*
         actorSystem.scheduler().scheduleOnce(Duration.create(60, TimeUnit.SECONDS),
+=======
+        actorSystem.scheduler().scheduleOnce(Duration.create(30, TimeUnit.SECONDS),
+>>>>>>> origin/master
                 new Runnable() {
                     @Override
                     public void run() {
@@ -47,6 +50,7 @@ public class FrontEndMain {
                         actorRef.tell(new AddMessage("hello from frontend-"+i.incrementAndGet()), ActorRef.noSender());
                     }
                 }, actorSystem.dispatcher());
+
 
     }
 

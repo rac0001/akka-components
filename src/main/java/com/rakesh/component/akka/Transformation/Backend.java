@@ -18,6 +18,7 @@ public class Backend extends AbstractActor {
     public void preStart(){
         cluster.subscribe(self(), ClusterEvent.initialStateAsEvents(),
                 ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
+
     }
 
     @Override

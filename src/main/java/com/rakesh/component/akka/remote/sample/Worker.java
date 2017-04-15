@@ -17,22 +17,9 @@ public class Worker extends AbstractActor {
 
         receive(ReceiveBuilder
                 .match(String.class, msg -> {
-
-/*
-                    ProcessBuilder pb = new ProcessBuilder("sh /est-staging/EST_INGESTION_SCRIPTS/sampleTest.sh");
-//                    pb.directory(new File("myDir"));
-                    Process p = pb.start();
-                    p.waitFor();*/
-
-                    System.out.println("-------START------");
-//                    runScript("sh /est-staging/EST_INGESTION_SCRIPTS/sampleTest.sh");
-
-                    runScript("sh /est-staging/EST_INGESTION_SCRIPTS/sampleTest.sh");
-                    System.out.println("-------END ------");
-//                    System.out.println("path is:"+self().path());
-//                    System.out.println("self is:"+self());
-                    System.out.println("recieved message:"+msg);
-//                    getContext().system().terminate();
+                    System.out.println("received message->"+msg);
+                    System.out.println(self().path().toString());
+//                    sender().tell("send back to master",self());
                 })
                 .build()
 

@@ -12,9 +12,8 @@ public class Worker extends AbstractActor {
     Worker(){
         receive(ReceiveBuilder.match(
                 String.class,msg -> {
-                    System.out.println("received message->"+msg);
-                    System.out.println(self().path().toString());
-                    getContext().sender().tell(PoisonPill.getInstance(),self());
+                    System.out.println("received message-->"+msg+"::::"+self().path().toString());
+                    sender().tell("over",self());
                 }
                 ).build()
         );

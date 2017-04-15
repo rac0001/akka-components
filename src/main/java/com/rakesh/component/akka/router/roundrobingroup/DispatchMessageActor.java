@@ -6,7 +6,7 @@ import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 import akka.routing.*;
-import com.rakesh.component.akka.router.roundrobinpool.Worker;
+import com.rakesh.component.akka.remote.sample.Worker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,10 @@ public class DispatchMessageActor extends AbstractActor {
         ActorRef configRef = getContext().actorOf(FromConfig.getInstance().props(Props.create(Worker.class)),"remote-round-robin");
 
 
+
         receive(ReceiveBuilder.match(
                 String.class,msg -> {
+//                    System.out.println("---->"+msg+"-"+sender());
 //                    router.route(msg,self());
 //                    routerRef.tell(msg,self());
                     configRef.tell(msg,self());

@@ -41,7 +41,7 @@ public class RoundRobinGroupImpl {
 //        fileActor.tell("bellllo", ActorRef.noSender());
 
         AtomicInteger i = new AtomicInteger(0);
-        actorSystem.scheduler().schedule(Duration.create(5, TimeUnit.SECONDS),Duration.create(5, TimeUnit.SECONDS),
+        actorSystem.scheduler().scheduleOnce(Duration.create(5, TimeUnit.SECONDS),
                 new Runnable() {
                     @Override
                     public void run() {

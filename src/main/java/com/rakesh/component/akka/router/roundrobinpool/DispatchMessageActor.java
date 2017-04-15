@@ -6,8 +6,12 @@ import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 import akka.routing.*;
+import akka.util.Timeout;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,27 +28,33 @@ public class DispatchMessageActor extends AbstractActor {
 
         List<Routee> routees = new ArrayList<>();
 
-        IntStream.rangeClosed(1,5).forEach( i-> {
-            ActorRef actor = getContext().actorOf(Props.create(Worker.class),"actor-"+i);
-            routees.add(new ActorRefRoutee(actor));
-        });
+//        IntStream.rangeClosed(1,5).forEach( i-> {
+//            ActorRef actor = getContext().actorOf(Props.create(Worker.class),"actor-"+i);
+//            routees.add(new ActorRefRoutee(actor));
+//        });
+//
+//        router = new Router(new RoundRobinRoutingLogic(),routees);
 
-        router = new Router(new RoundRobinRoutingLogic(),routees);
-
-        ActorRef routerRef = getContext().actorOf(new RoundRobinPool(5).props(Props.create(Worker.class)),"router-2");
+//        ActorRef routerRef = getContext().actorOf(new RoundRobinPool(5).props(Props.create(Worker.class)),"router-2");
 
 //        Config config = ConfigFactory.load().getConfig("router-example");
-        ActorRef configRef = getContext().actorOf(FromConfig.getInstance().props(Props.create(Worker.class)),"random-router-pool");
+        ActorRef routee = getContext().actorOf(FromConfig.getInstance().props(Props.create(Worker.class)),"random-router-pool");
 
 
         receive(ReceiveBuilder.match(
-                String.class,msg -> {
-//                    router.route(msg,self());
-//                    routerRef.tell(msg,self());
-                    configRef.tell(msg,self());
+                String.class, (String msg) -> {
+
+//                    routee.tell(msg,self());
+
+                    Timeout timeout = new Timeout(Duration.create(5, "seconds"));
+                    Future<Object> futureResult = akka.pattern.Patterns.ask(
+                            routee,msg, timeout);
+
+                    String result = (String) Await.result(futureResult, timeout.duration());
+                    System.out.println("---finish result --"+result+"-"+sender());
                 }
-                ).match(PoisonPill.class,msg->{
-                    getContext().stop(self());
+                ).match(Result.class,msg->{
+                    System.out.println("---finish--"+sender().path());
                 }).build()
         );
 

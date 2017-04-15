@@ -34,7 +34,7 @@ public class Worker extends AbstractActor {
 
     public void doWork(Work work,ActorRef sender){
 
-        context().system().scheduler().scheduleOnce(Duration.create(1, TimeUnit.SECONDS),
+        context().system().scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS),
                 () -> {
                     getContext().actorSelection("/user/worker-resolver").tell(work,self());
                 },context().system().dispatcher());

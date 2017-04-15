@@ -31,7 +31,7 @@ public class Main {
 
         AtomicInteger i = new AtomicInteger(0);
 
-        actorSystem.scheduler().schedule(Duration.create(5, TimeUnit.SECONDS),Duration.create(1, TimeUnit.SECONDS),
+        actorSystem.scheduler().schedule(Duration.create(5, TimeUnit.SECONDS),Duration.create(2, TimeUnit.SECONDS),
                 () -> {
                     Work work = new Work("hello, this is work-"+i.incrementAndGet());
                     master.tell(work, ActorRef.noSender());

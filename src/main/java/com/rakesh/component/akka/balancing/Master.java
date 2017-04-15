@@ -2,61 +2,74 @@ package com.rakesh.component.akka.balancing;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.actor.Terminated;
 import akka.cluster.Cluster;
 import akka.japi.pf.ReceiveBuilder;
-import com.rakesh.component.akka.Transformation.AddMessage;
-import com.rakesh.component.akka.Transformation.ResultMessage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Created by ranantoju on 4/8/2017.
  */
-public class Master extends AbstractActor {
+public class Master extends AbstractActor{
 
-    private Cluster cluster = Cluster.get(getContext().system());
+//    private Cluster cluster = Cluster.get(getContext().system());
 
-    private Map<ActorRef,JobStatus> actorRefMap = new HashMap<>();
+    private Map<ActorRef,Optional<WorkStat>> actorRefMap = new HashMap<>();
+    private Queue<WorkStat> workQueue = new ArrayBlockingQueue<WorkStat>(1000);
 
-
-
-    private List<ActorRef> backendList = new ArrayList<>();
-    int jobCounter = 0;
-
-    @Override
-    public void postStop(){
-        cluster.unsubscribe(self());
-    }
+//    @Override
+//    public void postStop(){
+//        cluster.unsubscribe(self());
+//    }
 
     public Master() {
         receive(ReceiveBuilder
-                .match(AddMessage.class ,msg -> backendList.isEmpty() ,msg -> {
-                    System.out.println("backend list is empty");})
-                .match(AddMessage.class , msg -> {
-
-                    jobCounter++;
-                    backendList.get( jobCounter % backendList.size()).tell(msg.getMsg(),self());
-
-//                    int val = new Random().nextInt(backendList.size());
-//                    backendList.get(val).tell(msg.getMsg(),self());
-
-                }).match(String.class ,msg -> msg.equalsIgnoreCase("backendWorker") &&
-                        !backendList.contains(sender()), msg -> {
-                    System.out.println("adding backend :"+sender().path());
-                    backendList.add(sender());
-                    getContext().watch(sender());
-                }).match(ResultMessage.class , msg -> {
-                    System.out.println("transformed backend String:"+msg.getMsg());
-                }).match(Terminated.class,msg -> {
-                    backendList.remove(msg.getActor());
+                .match(Work.class, work -> {
+                            WorkStat workStat = new WorkStat(work, self());
+                            boolean added = workQueue.offer(workStat);
+                            if(!added){
+                                workQueue.offer(workStat);
+                            }
+                            reportToWorker();
+                        })
+                .match(MessageHandler.InitializeWorkers.class, init -> {
+                    ActorRef workerRef = init.getWorker();
+                    actorRefMap.put(workerRef,Optional.empty());
+                    context().watch(workerRef);
+                    reportToWorker();
+                })
+                .match(MessageHandler.RequestWork.class, reqWork ->{
+                    if(actorRefMap.containsKey(reqWork.getWorker())){
+                        if(workQueue.isEmpty())
+                            reqWork.getWorker().tell(new MessageHandler.NoWork(),self());
+                        else if(! actorRefMap.get(reqWork.getWorker()).isPresent()){
+                            WorkStat workStat = workQueue.poll();
+                            actorRefMap.put(reqWork.getWorker(),Optional.of(workStat));
+                            reqWork.getWorker().tell(new MessageHandler.DoWork(workStat.getWork()),workStat.getSender());
+                        }
+                    }
+                })
+                .match(MessageHandler.WorkIsDone.class , workCom -> {
+                    if(!actorRefMap.containsKey(workCom.getWorker())) {
+                        //oh, but why no worker added before
+                    }else{
+                        actorRefMap.put(workCom.getWorker(),Optional.empty());
+                    }
                 })
                 .build()
         );
+    }
+
+
+    public void reportToWorker(){
+        if(! workQueue.isEmpty()){
+            actorRefMap.forEach( (actor,workStat) -> {
+                if(! workStat.isPresent()) {
+                    actor.tell(new MessageHandler.WorkReady(), self());
+                }
+            });
+        }
     }
 
 }

@@ -3,7 +3,9 @@ package com.rakesh.component.akka.state;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.actor.Terminated;
 import com.rakesh.component.akka.example4.AskActor;
+import scala.concurrent.Future;
 
 /**
  * Created by mac on 4/14/17.
@@ -26,7 +28,7 @@ public class StateImpl {
         stateRef.tell("foo",ActorRef.noSender());
 
 //        stateRef.tell("foo",ActorRef.noSender());
-
+//        Future<Terminated> ter = fileSystem.whenTerminated();
 
     }
 

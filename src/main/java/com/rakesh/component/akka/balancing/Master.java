@@ -13,15 +13,15 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 public class Master extends AbstractActor{
 
-//    private Cluster cluster = Cluster.get(getContext().system());
+    private Cluster cluster = Cluster.get(getContext().system());
 
-    private Map<ActorRef,Optional<WorkStat>> actorRefMap = new HashMap<>();
+    private Map<ActorRef,Optional<WorkStat>> actorRefMap = new LinkedHashMap<>();
     private Queue<WorkStat> workQueue = new ArrayBlockingQueue<WorkStat>(1000);
 
-//    @Override
-//    public void postStop(){
-//        cluster.unsubscribe(self());
-//    }
+    @Override
+    public void postStop(){
+        cluster.unsubscribe(self());
+    }
 
     public Master() {
         receive(ReceiveBuilder

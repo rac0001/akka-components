@@ -20,61 +20,53 @@ import java.util.concurrent.TimeUnit;
  */
 public class Worker extends AbstractActor {
 
-//    private Cluster cluster = Cluster.get(getContext().system());
+    private Cluster cluster = Cluster.get(getContext().system());
     public ActorRef master;
+    public ActorRef workResolver;
 
-/*
     @Override
     public void preStart(){
         cluster.subscribe(self(), ClusterEvent.initialStateAsEvents(),
                 ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-
     }
-*/
 
-    public void doWork(Work work,ActorRef sender){
+    public void doWork(Work work){
 
-        context().system().scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS),
-                () -> {
-                    getContext().actorSelection("/user/worker-resolver").tell(work,self());
-                },context().system().dispatcher());
-//        System.out.println("from remote worker:"+sender.path()+" and work is:"+work.getWorkRequestParam());
+        context().system().scheduler().scheduleOnce(Duration.create(20, TimeUnit.SECONDS),
+                () -> getContext().actorSelection("/user/work-processor").tell(work,self())
+                ,context().system().dispatcher());
     };
 
-/*
     @Override
     public void postStop(){
         cluster.unsubscribe(self());
     }
-*/
 
-    public Worker(ActorRef master) {
-        this.master = master;
+    public Worker(ActorRef workResolver) {
+        this.workResolver = workResolver;
         receive(idle());
     }
 
     public void register(Member member){
-        if(member.hasRole("master")){
+        if(member.hasRole("frontend")){
             getContext().actorSelection(member.address()+"/user/master")
                     .tell(new MessageHandler.InitializeWorkers(self()),self());
         }
     }
 
-
     final PartialFunction<Object,BoxedUnit> idle(){
         return ReceiveBuilder
                 .match(MessageHandler.WorkReady.class, msg -> {
-//                    master = sender();
+                    master = sender();
                     master.tell(new MessageHandler.RequestWork(self()),self());
                 })
                 .match(MessageHandler.NoWork.class , msg -> {})
                 .match(MessageHandler.DoWork.class, msg -> {
-
-                    doWork(msg.getWork(),self());
-
+                    doWork(msg.getWork());
+                    System.out.println("--now become working");
                     context().become(working());
                 })
-                /*.match(ClusterEvent.CurrentClusterState.class, state -> {
+                .match(ClusterEvent.CurrentClusterState.class, state -> {
                     for(Member member : state.getMembers()){
                         if (member.status().equals(MemberStatus.up())) {
                             register(member);
@@ -83,24 +75,24 @@ public class Worker extends AbstractActor {
                 })
                 .match(ClusterEvent.MemberUp.class, mUp -> {
                     register(mUp.member());
-                })*/
+                })
                 .build();
     }
-
 
     final PartialFunction<Object,BoxedUnit> working(){
         return ReceiveBuilder
                 .match(MessageHandler.DoWork.class, msg -> {})
                 .match(MessageHandler.WorkReady.class, msg -> {
-//                    master = sender();
+                    master = sender();
                 })
                 .match(MessageHandler.NoWork.class , msg -> {})
                 .match(MessageHandler.WorkCompleted.class, completed ->{
                     master.tell(new MessageHandler.WorkIsDone(self()),self());
                     master.tell(new MessageHandler.RequestWork(self()),self());
+                    System.out.println("--now become idle");
                     context().become(idle());
                 })
-                /*.match(ClusterEvent.CurrentClusterState.class, state -> {
+                .match(ClusterEvent.CurrentClusterState.class, state -> {
                     for(Member member : state.getMembers()){
                         if (member.status().equals(MemberStatus.up())) {
                             register(member);
@@ -109,7 +101,7 @@ public class Worker extends AbstractActor {
                 })
                 .match(ClusterEvent.MemberUp.class, mUp -> {
                     register(mUp.member());
-                })*/
+                })
                 .build();
     }
 }

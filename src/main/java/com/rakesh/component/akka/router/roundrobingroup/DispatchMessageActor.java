@@ -23,9 +23,10 @@ public class DispatchMessageActor extends AbstractActor {
         List<String> routees = new ArrayList<>();
 
 
-        ActorRef configRef = getContext().actorOf(FromConfig.getInstance().props(Props.create(Worker.class)),"remote-round-robin");
+//        ActorRef configRef = getContext().actorOf(FromConfig.getInstance().props(Props.create(Worker.class)),"random-router-pool");
 
-
+        ActorRef configRef = getContext().actorOf(new BalancingPool(5).props(
+                Props.create(Worker.class)),"router-pool");
 
         receive(ReceiveBuilder.match(
                 String.class,msg -> {
@@ -33,9 +34,6 @@ public class DispatchMessageActor extends AbstractActor {
 //                    router.route(msg,self());
 //                    routerRef.tell(msg,self());
                     configRef.tell(msg,self());
-                }
-                ).match(PoisonPill.class,msg->{
-                    getContext().stop(self());
                 }).build()
         );
 

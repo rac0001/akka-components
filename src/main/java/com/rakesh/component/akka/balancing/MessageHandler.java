@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by mac on 4/15/17.
  */
-public class MessageHandler implements Serializable{
+public class MessageHandler{
 
     public static class InitializeWorkers implements Serializable{
         ActorRef worker;

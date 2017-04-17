@@ -3,9 +3,6 @@ package com.rakesh.component.akka.balancing;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import com.rakesh.component.akka.Transformation.AddMessage;
-import com.rakesh.component.akka.example2.Checker;
-import com.rakesh.component.akka.example2.Storage;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
@@ -27,7 +24,7 @@ public class Main {
         final ActorRef worker3 = actorSystem.actorOf(Props.create(Worker.class,master),"worker-3");
         final ActorRef worker4 = actorSystem.actorOf(Props.create(Worker.class,master),"worker-4");
 
-        ActorRef workResolver = actorSystem.actorOf(Props.create(WorkResolver.class),"worker-resolver");
+        ActorRef workResolver = actorSystem.actorOf(Props.create(WorkProcessor.class),"worker-processor");
 
         AtomicInteger i = new AtomicInteger(0);
 

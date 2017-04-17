@@ -6,14 +6,21 @@ import akka.japi.pf.ReceiveBuilder;
 /**
  * Created by mac on 4/15/17.
  */
-public class WorkResolver extends AbstractActor {
+public class WorkProcessor extends AbstractActor {
 
-    public WorkResolver() {
+    public WorkProcessor() {
 
         receive(ReceiveBuilder
                 .match(Work.class, work -> {
+
+//                    Process proc = Runtime.getRuntime().exec("java -cp IngestionTrack-1.0-SNAPSHOT.jar Ingestion_Start");
+
                     System.out.println("from remote worker:"+sender().path()
                             +" and work is:"+work.getWorkRequestParam());
+
+//                    proc.waitFor();
+                    //loop
+
                     sender().tell(new MessageHandler.WorkCompleted(),self());
                 })
                 .build()

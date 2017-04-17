@@ -19,11 +19,11 @@ public class RoundRobinGroupImpl {
 
     public static void main(String args[]){
 
-        Config config= ConfigFactory.load().getConfig("RoundRobinGroup");
+        Config config= ConfigFactory.load().getConfig("RouterPool");
 
         ActorSystem actorSystem = ActorSystem.create("router",config);
 
-        final ActorRef fileActor = actorSystem.actorOf(Props.create(DispatchMessageActor.class),"round-robin-group-dispatch");
+        final ActorRef fileActor = actorSystem.actorOf(Props.create(DispatchMessageActor.class),"router-dispatch");
 //        ActorRef workerRef = actorSystem.actorOf(Props.create(DispatchMessageActor.class),"round-robin-group-dispatch");
 
 /*
@@ -41,11 +41,10 @@ public class RoundRobinGroupImpl {
 //        fileActor.tell("bellllo", ActorRef.noSender());
 
         AtomicInteger i = new AtomicInteger(0);
-        actorSystem.scheduler().scheduleOnce(Duration.create(5, TimeUnit.SECONDS),
+        actorSystem.scheduler().schedule(Duration.create(1, TimeUnit.SECONDS),Duration.create(1, TimeUnit.SECONDS),
                 new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("$$$$$$$ sending message after 25 sec");
                         fileActor.tell("hellllo-"+i.incrementAndGet(), ActorRef.noSender());
                     }
                 }, actorSystem.dispatcher());

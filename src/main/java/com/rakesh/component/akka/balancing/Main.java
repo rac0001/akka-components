@@ -39,7 +39,6 @@ public class Main {
         master.tell(new MessageHandler.InitializeWorkers(worker3),ActorRef.noSender());
         master.tell(new MessageHandler.InitializeWorkers(worker4),ActorRef.noSender());
 
-
     }
 
 

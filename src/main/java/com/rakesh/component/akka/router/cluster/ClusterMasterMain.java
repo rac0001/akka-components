@@ -31,11 +31,13 @@ public class ClusterMasterMain {
                 }, actorSystem.dispatcher());
 
 
+/*
         actorSystem.scheduler().schedule(Duration.create(15, TimeUnit.SECONDS), Duration.create(2, TimeUnit.SECONDS),
                 () -> {
                     MessageProcess messageProcess = new MessageProcess("hello, this is another work process-" + i.incrementAndGet());
                     master.tell(messageProcess, ActorRef.noSender());
                 }, actorSystem.dispatcher());
+*/
 
 /*
 

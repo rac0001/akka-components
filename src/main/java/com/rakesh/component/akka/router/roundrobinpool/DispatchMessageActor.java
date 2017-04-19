@@ -38,20 +38,23 @@ public class DispatchMessageActor extends AbstractActor {
 //        ActorRef routerRef = getContext().actorOf(new RoundRobinPool(5).props(Props.create(Worker.class)),"router-2");
 
 //        Config config = ConfigFactory.load().getConfig("router-example");
-        ActorRef routee = getContext().actorOf(FromConfig.getInstance().props(Props.create(Worker.class)),"random-router-pool");
+        ActorRef routee = getContext().actorOf(FromConfig.getInstance().props(Props.create(MyBoundedActor.class,getContext().system().settings(),ConfigFactory.load())),"random-router-pool");
 
+//        ActorRef myActor = system.actorOf(Props.create(Demo.class, this)
+//                .withDispatcher("prio-dispatcher"));
 
         receive(ReceiveBuilder.match(
                 String.class, (String msg) -> {
 
-//                    routee.tell(msg,self());
+                    routee.tell(msg,self());
 
-                    Timeout timeout = new Timeout(Duration.create(5, "seconds"));
+
+/*                    Timeout timeout = new Timeout(Duration.create(5, "seconds"));
                     Future<Object> futureResult = akka.pattern.Patterns.ask(
                             routee,msg, timeout);
 
                     String result = (String) Await.result(futureResult, timeout.duration());
-                    System.out.println("---finish result --"+result+"-"+sender());
+                    System.out.println("---finish result --"+result+"-"+sender());*/
                 }
                 ).match(Result.class,msg->{
                     System.out.println("---finish--"+sender().path());

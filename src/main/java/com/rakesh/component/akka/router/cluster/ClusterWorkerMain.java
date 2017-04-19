@@ -22,7 +22,7 @@ public class ClusterWorkerMain {
 
         final ActorSystem actorSystem = ActorSystem.create("cluster-aware-system",config);
 
-        actorSystem.actorOf(Props.create(ClusterWorker.class).withMailbox("bounded-mailbox"),"cluster-worker");
+        actorSystem.actorOf(Props.create(ClusterWorker.class),"cluster-worker");
 
     }
 

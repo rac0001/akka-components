@@ -46,6 +46,7 @@ public class Master extends AbstractActor{
                         else if(! actorRefMap.get(reqWork.getWorker()).isPresent()){
                             WorkStat workStat = workQueue.poll();
                             actorRefMap.put(reqWork.getWorker(),Optional.of(workStat));
+//                            actorRefMap.put(reqWork.getWorker(),Optional.empty());
                             reqWork.getWorker().tell(new MessageHandler.DoWork(workStat.getWork()),workStat.getSender());
                         }
                     }

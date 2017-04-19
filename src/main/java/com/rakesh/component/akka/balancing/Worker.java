@@ -14,6 +14,7 @@ import scala.concurrent.duration.Duration;
 import scala.runtime.BoxedUnit;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by ranantoju on 4/8/2017.
@@ -23,6 +24,8 @@ public class Worker extends AbstractActor {
     private Cluster cluster = Cluster.get(getContext().system());
     public ActorRef master ;
     public ActorRef workResolver;
+
+    public AtomicInteger counter = new AtomicInteger(0);
 
     @Override
     public void preStart(){
@@ -64,10 +67,19 @@ public class Worker extends AbstractActor {
                 })
                 .match(MessageHandler.NoWork.class , msg -> {})
                 .match(MessageHandler.DoWork.class, msg -> {
+//                    counter.incrementAndGet();
+//                    System.out.println("counter--"+counter.get());
                     doWork(msg.getWork());
-                    System.out.println("--now become working");
-                    context().become(working());
-                })
+//                    if(counter.get() == 2) {
+                        System.out.println("--now become working");
+                        context().become(working());
+//                    }
+                })/*.match(MessageHandler.WorkCompleted.class, completed ->{
+//                    counter.decrementAndGet();
+//                    System.out.println("counter--"+counter.get());
+                    master.tell(new MessageHandler.WorkIsDone(self()),self());
+                    master.tell(new MessageHandler.RequestWork(self()),self());
+                })*/
                 .match(ClusterEvent.CurrentClusterState.class, state -> {
                     for(Member member : state.getMembers()){
                         if (member.status().equals(MemberStatus.up())) {
@@ -89,10 +101,14 @@ public class Worker extends AbstractActor {
                 })
                 .match(MessageHandler.NoWork.class , msg -> {})
                 .match(MessageHandler.WorkCompleted.class, completed ->{
+//                    counter.decrementAndGet();
+//                    System.out.println("counter--"+counter.get());
                     master.tell(new MessageHandler.WorkIsDone(self()),self());
                     master.tell(new MessageHandler.RequestWork(self()),self());
-                    System.out.println("--now become idle");
-                    context().become(idle());
+//                    if(counter.get() == 0) {
+                        System.out.println("--now become idle");
+                        context().become(idle());
+//                    }
                 })
                 .match(ClusterEvent.CurrentClusterState.class, state -> {
                     for(Member member : state.getMembers()){

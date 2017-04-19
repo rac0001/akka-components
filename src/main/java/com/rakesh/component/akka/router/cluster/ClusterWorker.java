@@ -29,7 +29,7 @@ public class ClusterWorker extends AbstractActor {
                     System.out.println("---Received message from router----" + msg.getMessage() + "--path---" + self().path());
 
 
-                    Cancellable cc  = getContext().system().scheduler().scheduleOnce(Duration.create(20, TimeUnit.SECONDS),
+                    getContext().system().scheduler().scheduleOnce(Duration.create(20, TimeUnit.SECONDS),
                             () -> {
                                 System.out.println("---the worker still working on same message----" +
                                     msg.getMessage() + "--path---" + self().path());

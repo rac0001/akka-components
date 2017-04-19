@@ -24,7 +24,7 @@ public class ClusterMasterMain {
         final ActorRef master = actorSystem.actorOf(Props.create(ClusterMaster.class), "cluster-master");
 
         AtomicInteger i = new AtomicInteger(0);
-        actorSystem.scheduler().schedule(Duration.create(15, TimeUnit.SECONDS), Duration.create(2, TimeUnit.SECONDS),
+        actorSystem.scheduler().schedule(Duration.create(15, TimeUnit.SECONDS), Duration.create(4, TimeUnit.SECONDS),
                 () -> {
                     MessageProcess messageProcess = new MessageProcess("hello, this is work process-" + i.incrementAndGet());
                     master.tell(messageProcess, ActorRef.noSender());

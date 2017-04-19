@@ -3,6 +3,7 @@ package com.rakesh.component.akka.balancing;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.cluster.singleton.ClusterSingletonProxy;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import scala.concurrent.duration.Duration;
@@ -17,7 +18,8 @@ public class MasterMain {
 
     public static void main(String args[]){
 
-        Config config= ConfigFactory.load().getConfig("FrontEndCluster");
+        Config config= ConfigFactory.parseString("akka.cluster.roles = [master]")
+                            .withFallback(ConfigFactory.load().getConfig("loadbalancer"));
 
         ActorSystem actorSystem = ActorSystem.create("load-balancing-system",config);
 
@@ -31,6 +33,7 @@ public class MasterMain {
                     Work work = new Work("hello, this is work-"+i.incrementAndGet());
                     master.tell(work, ActorRef.noSender());
                 }, actorSystem.dispatcher());
+
 
     }
 

@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class Worker extends AbstractActor {
 
     private Cluster cluster = Cluster.get(getContext().system());
-    public ActorRef master;
+    public ActorRef master ;
     public ActorRef workResolver;
 
     @Override
@@ -48,8 +48,10 @@ public class Worker extends AbstractActor {
     }
 
     public void register(Member member){
-        if(member.hasRole("frontend")){
-            getContext().actorSelection(member.address()+"/user/master")
+        System.out.println("----inside register----");
+        if(member.hasRole("master")){
+            System.out.println("----master register----");
+            getContext().actorSelection(member.address()+"/user/master/singleton")
                     .tell(new MessageHandler.InitializeWorkers(self()),self());
         }
     }

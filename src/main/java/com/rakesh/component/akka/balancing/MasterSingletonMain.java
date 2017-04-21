@@ -17,19 +17,15 @@ public class MasterSingletonMain {
     public static void main(String args[]) {
 
         if(args.length == 0){
-            register(args);
+            register(new String[]{"9000","9001"});
         }else{
             singleRegister(args[0]);
         }
-
     }
 
     public static void register(String args[]){
 
-        String[] ports = {"9000","9001"};
-
-        for(String port: ports) {
-
+        for(String port: args) {
             singleRegister(port);
         }
     }

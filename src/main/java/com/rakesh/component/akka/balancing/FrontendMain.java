@@ -33,7 +33,7 @@ public class FrontendMain {
         final ActorRef frontEnd = actorSystem.actorOf(Props.create(Frontend.class),"frontend");
 
         AtomicInteger i = new AtomicInteger(0);
-        actorSystem.scheduler().schedule(Duration.create(20, TimeUnit.SECONDS),Duration.create(2, TimeUnit.SECONDS),
+        actorSystem.scheduler().schedule(Duration.create(5, TimeUnit.SECONDS),Duration.create(2, TimeUnit.SECONDS),
                 () -> {
                     frontEnd.tell("hello, this is work-"+i.incrementAndGet(), ActorRef.noSender());
                 }, actorSystem.dispatcher());

@@ -23,9 +23,11 @@ public class WorkerMain {
 
         ActorSystem actorSystem = ActorSystem.create("load-balancing-system",config);
 
-        final ActorRef workProcessor = actorSystem.actorOf(Props.create(WorkProcessor.class),"work-processor");
+//        final ActorRef workProcessor = actorSystem.actorOf(Props.create(WorkProcessor.class),"work-processor");
 
-        actorSystem.actorOf(Props.create(Worker.class,workProcessor),"worker");
+//        actorSystem.actorOf(Props.create(Worker.class,workProcessor),"worker");
+        actorSystem.actorOf(Props.create(Worker.class),"worker");
+
 
     }
 

@@ -15,18 +15,10 @@ public class WorkProcessor extends AbstractActor {
 
         receive(ReceiveBuilder
                         .match(Work.class, work -> {
-
-//                    Process proc = Runtime.getRuntime().exec("java -cp IngestionTrack-1.0-SNAPSHOT.jar Ingestion_Start");
-
-                            System.out.println("from remote worker:"+sender().path()
-                                    +" and work is:"+work.getWorkRequestParam());
-
-//                    proc.waitFor();
-                            //loop
-
+                            System.out.println("from remote worker:"+sender().path() +" and work is:"+work.getWorkRequestParam());
                             sender().tell(new MessageHandler.WorkCompleted(),self());
                         })
-                        .build()
+                .build()
         );
     }
 

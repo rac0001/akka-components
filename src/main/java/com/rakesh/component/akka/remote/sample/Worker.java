@@ -9,6 +9,7 @@ import org.apache.commons.exec.ExecuteException;
 import scala.concurrent.duration.Duration;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,15 +23,25 @@ public class Worker extends AbstractActor {
         receive(ReceiveBuilder
                 .match(String.class, msg -> {
 
-                    System.out.println("----------got message------"+self().path().toString());
+                    System.out.println("----------got message------"+msg+",path-:"+self().path().toString());
 
+                    sender().tell("Helllo back from worker",self());
+
+/*
                     getContext().system().scheduler().scheduleOnce(Duration.create(15, TimeUnit.SECONDS),
                             () -> System.out.println("received message->"+msg+"--path--"+self().path().toString())
                               , getContext().system().dispatcher());
+*/
 
 //                    System.out.println("received message->"+msg);
 //                    System.out.println(self().path().toString());
 //                    sender().tell("send back to master",self());
+                })
+                .match(Get.class,name->{
+                    System.out.println("----------got message------"+name.getName()+",path-:"+self().path().toString());
+
+                    sender().tell("Helllo back from worker",self());
+
                 })
                 .build()
 
@@ -38,6 +49,16 @@ public class Worker extends AbstractActor {
 
 
     }
+
+    public static class Get implements Serializable {
+        String name;
+        Get(String name){
+            this.name = name;
+        }
+        public String getName(){
+            return name;
+        }
+    };
 
     public static void runScript(String command){
         int iExitValue;

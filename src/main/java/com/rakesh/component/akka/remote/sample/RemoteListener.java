@@ -18,7 +18,7 @@ public class RemoteListener {
 
         ActorRef workerRef = actorSystem.actorOf(Props.create(Worker.class),"remote-worker");
 
-        workerRef.tell("Hey remote guy" , ActorRef.noSender());
+//        workerRef.tell("Hey remote guy" , ActorRef.noSender());
 
     }
 }

@@ -34,6 +34,7 @@ public class Frontend  extends AbstractActor {
                     System.out.println("---got messge from frontned");
                     Work work = new Work(msg);
                     masterProxy.tell(work, self());
+                    sender().tell("reply from frontend",self());
                 }).build()
 
         );

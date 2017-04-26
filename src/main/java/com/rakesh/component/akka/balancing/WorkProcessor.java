@@ -15,7 +15,7 @@ public class WorkProcessor extends AbstractActor {
 
         receive(ReceiveBuilder
                         .match(Work.class, work -> {
-                            System.out.println("from remote worker:"+sender().path() +" and work is:"+work.getWorkRequestParam());
+                            System.out.println("Work complete is:"+work.getWorkRequestParam());
                             sender().tell(new MessageHandler.WorkCompleted(),self());
                         })
                 .build()

@@ -19,19 +19,20 @@ public class MasterSingletonMain {
         if(args.length == 0){
             register(new String[]{"9000","9001"});
         }else{
-            singleRegister(args[0]);
+            singleRegister(args[0],args[1]);
         }
     }
 
     public static void register(String args[]){
 
         for(String port: args) {
-            singleRegister(port);
+            singleRegister(port,"127.0.0.1");
         }
     }
 
-    public static void singleRegister(String port){
+    public static void singleRegister(String port,String host){
         Config config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port)
+                .withFallback(ConfigFactory.parseString("akka.remote.netty.tcp.hostname="+host))
                 .withFallback(ConfigFactory.parseString("akka.cluster.roles = [master]"))
                 .withFallback(ConfigFactory.load().getConfig("loadbalancer"));
 

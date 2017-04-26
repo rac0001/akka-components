@@ -39,7 +39,7 @@ public class Worker extends AbstractActor {
 
 //        workProcessor.tell(work,self());
 
-        context().system().scheduler().scheduleOnce(Duration.create(5, TimeUnit.SECONDS),
+        context().system().scheduler().scheduleOnce(Duration.create(15, TimeUnit.SECONDS),
                 () -> workProcessor.tell(work,self())
                 ,context().system().dispatcher());
 
@@ -84,7 +84,7 @@ public class Worker extends AbstractActor {
 //                    System.out.println("counter--"+counter.get());
                     doWork(msg.getWork());
 //                    if(counter.get() == 2) {
-                        System.out.println("--now become working");
+                        System.out.println("--now become working--");
                         context().become(working());
 //                    }
                 })/*.match(ClusterEvent.CurrentClusterState.class, state -> {
@@ -95,7 +95,7 @@ public class Worker extends AbstractActor {
                     }
                 })*/
                 .match(MessageHandler.WorkCompleted.class, completed ->{
-                    System.out.println("--now become WorkCompleted from idleee");
+//                    System.out.println("--now become WorkCompleted from idleee");
                 }).match(ClusterEvent.MemberUp.class, mUp -> {
                     register(mUp.member());
                 })
@@ -108,14 +108,14 @@ public class Worker extends AbstractActor {
                 .match(MessageHandler.WorkReady.class, msg -> {})
                 .match(MessageHandler.NoWork.class , msg -> {})
                 .match(MessageHandler.WorkCompleted.class, completed ->{
-                    System.out.println("--now become WorkCompleted");
+//                    System.out.println("--now become WorkCompleted");
 
 //                    counter.decrementAndGet();
 //                    System.out.println("counter--"+counter.get());
                     masterProxy.tell(new MessageHandler.WorkIsDone(self()),self());
                     masterProxy.tell(new MessageHandler.RequestWork(self()),self());
 //                    if(counter.get() == 0) {
-                        System.out.println("--now become idle");
+                        System.out.println("--now become free--");
                         context().become(idle());
 //                    }
                 })
